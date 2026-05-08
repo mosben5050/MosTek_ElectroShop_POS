@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+
+# App data
+data/*.db
+data/*.db-journal
+backups/
+logs/
+*.log
+
+# Build artifacts
+build/
+dist/
+*.spec
+
+# OS
+.DS_Store
+Thumbs.db
+
+.env
+!.env.example
