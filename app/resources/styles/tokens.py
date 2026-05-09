@@ -27,7 +27,19 @@ ACCENT_HOVER    = "#B8985A"
 ACCENT_LIGHT    = "#F5EFE0"
 ACCENT_DARK     = "#8B7340"
 
-
+# ════════════════════════════════════════════════════════════════════
+# SIDEBAR / DARK SURFACES — dark navy palette for the app shell sidebar
+# Inspired by modern POS dashboards (Toast, Square, Lightspeed)
+# ════════════════════════════════════════════════════════════════════
+SIDEBAR_BG          = "#0F172A"   # slate-900 — deep navy, main sidebar fill
+SIDEBAR_BG_HOVER    = "#1E293B"   # slate-800 — hover state for menu items
+SIDEBAR_BG_ACTIVE   = "#1D4ED8"   # blue-700 — active menu item
+SIDEBAR_BORDER      = "#1E293B"   # subtle separator lines on dark bg
+SIDEBAR_TEXT        = "#CBD5E1"   # slate-300 — default menu text (readable on dark)
+SIDEBAR_TEXT_MUTED  = "#64748B"   # slate-500 — section headers, store info
+SIDEBAR_TEXT_ACTIVE = "#FFFFFF"   # white — active menu item text
+SIDEBAR_BRAND_TEXT  = "#FFFFFF"   # "POS System" / "MosTek ElectroPOS" wordmark
+SIDEBAR_BRAND_SUB   = "#94A3B8"   # "Premium Edition" / tagline
 # ════════════════════════════════════════════════════════════════════
 # SEMANTIC COLOURS
 # ════════════════════════════════════════════════════════════════════

@@ -2,14 +2,11 @@
 
 Builds the application-wide stylesheet by injecting design tokens
 into a QSS template. Called once at startup by theme.apply_theme().
-
-QSS reference: https://doc.qt.io/qt-6/stylesheet-reference.html
 """
 from app.resources.styles import tokens as t
 
 
 def build_stylesheet() -> str:
-    """Return the full QSS stylesheet for the application."""
     return f"""
 /* ════════════════════════════════════════════════════════════════
    GLOBAL — every widget inherits these
@@ -62,7 +59,7 @@ QLabel[role="section"] {{
 }}
 
 /* ════════════════════════════════════════════════════════════════
-   BUTTONS — default = secondary style
+   BUTTONS
    ════════════════════════════════════════════════════════════════ */
 QPushButton {{
     background-color: {t.BG_CARD};
@@ -89,7 +86,6 @@ QPushButton:disabled {{
     border-color: {t.BORDER};
 }}
 
-/* Primary button — main call-to-action */
 QPushButton[variant="primary"] {{
     background-color: {t.PRIMARY};
     color: {t.PRIMARY_TEXT};
@@ -112,7 +108,6 @@ QPushButton[variant="primary"]:disabled {{
     border-color: {t.BORDER_STRONG};
 }}
 
-/* Danger button — delete, void */
 QPushButton[variant="danger"] {{
     background-color: {t.DANGER};
     color: {t.DANGER_TEXT};
@@ -124,7 +119,6 @@ QPushButton[variant="danger"]:hover {{
     border-color: {t.DANGER_HOVER};
 }}
 
-/* Ghost / link button — minimal styling */
 QPushButton[variant="ghost"] {{
     background-color: transparent;
     color: {t.PRIMARY};
@@ -159,7 +153,6 @@ QDateTimeEdit:focus, QComboBox:focus {{
     padding: 5px 9px;
 }}
 
-/* Error state — set on inputs via setProperty("state", "error") */
 QLineEdit[state="error"], QTextEdit[state="error"], QPlainTextEdit[state="error"],
 QSpinBox[state="error"], QDoubleSpinBox[state="error"], QComboBox[state="error"] {{
     border: 1px solid {t.DANGER};
@@ -183,10 +176,10 @@ QLineEdit::placeholder {{
 }}
 
 /* ════════════════════════════════════════════════════════════════
-   COMBOBOX dropdown — restore arrow indicator using CSS
+   COMBOBOX
    ════════════════════════════════════════════════════════════════ */
 QComboBox {{
-    padding-right: 32px;  /* space for the dropdown arrow */
+    padding-right: 32px;
 }}
 
 QComboBox::drop-down {{
@@ -203,7 +196,6 @@ QComboBox::drop-down:hover {{
     background-color: {t.BG_HOVER};
 }}
 
-/* Triangle arrow drawn with CSS borders — no image file needed */
 QComboBox::down-arrow {{
     width: 0;
     height: 0;
@@ -227,7 +219,7 @@ QComboBox QAbstractItemView {{
 }}
 
 /* ════════════════════════════════════════════════════════════════
-   CHECKBOX — properly styled box with checkmark
+   CHECKBOX
    ════════════════════════════════════════════════════════════════ */
 QCheckBox {{
     spacing: 8px;
@@ -258,9 +250,6 @@ QCheckBox::indicator:checked:hover {{
     border-color: {t.PRIMARY_HOVER};
 }}
 
-/* ════════════════════════════════════════════════════════════════
-   RADIO BUTTON
-   ════════════════════════════════════════════════════════════════ */
 QRadioButton {{
     spacing: 8px;
     background-color: transparent;
@@ -281,9 +270,7 @@ QRadioButton::indicator:checked {{
 }}
 
 /* ════════════════════════════════════════════════════════════════
-   INPUT FRAME — used by TextField when an icon is present
-   The frame provides the visible border, while the QLineEdit inside
-   it is borderless. This gives us pixel-perfect icon positioning.
+   INPUT FRAME
    ════════════════════════════════════════════════════════════════ */
 QFrame#InputFrame {{
     background-color: {t.BG_INPUT};
@@ -329,7 +316,7 @@ QHeaderView::section {{
 }}
 
 /* ════════════════════════════════════════════════════════════════
-   SCROLLBARS — slim, modern
+   SCROLLBARS
    ════════════════════════════════════════════════════════════════ */
 QScrollBar:vertical {{
     background: transparent;
@@ -401,7 +388,7 @@ QTabBar::tab:hover:!selected {{
 }}
 
 /* ════════════════════════════════════════════════════════════════
-   GROUPBOX — used as cards
+   GROUPBOX
    ════════════════════════════════════════════════════════════════ */
 QGroupBox {{
     background-color: {t.BG_CARD};
@@ -476,11 +463,184 @@ QFrame#PageHeader {{
 }}
 
 /* ════════════════════════════════════════════════════════════════
-   LOGIN PAGE — two-column layout over background image
-   Both panels use semi-transparent backgrounds so the image shows through.
+   SIDEBAR — dark navy app shell
    ════════════════════════════════════════════════════════════════ */
-/* Left panel uses a horizontal gradient so the right edge fades into
-   the background image instead of cutting off in a hard line. */
+QFrame#Sidebar {{
+    background-color: {t.SIDEBAR_BG};
+    border-right: 1px solid {t.SIDEBAR_BORDER};
+}}
+
+QLabel#SidebarBrandTitle {{
+    color: {t.SIDEBAR_BRAND_TEXT};
+    font-size: {t.FONT_SIZE_LG}px;
+    font-weight: {t.FONT_WEIGHT_BOLD};
+    background: transparent;
+}}
+
+QLabel#SidebarBrandSub {{
+    color: {t.SIDEBAR_BRAND_SUB};
+    font-size: {t.FONT_SIZE_XS}px;
+    font-weight: {t.FONT_WEIGHT_MEDIUM};
+    background: transparent;
+}}
+
+QPushButton#SidebarToggle {{
+    background-color: transparent;
+    color: {t.SIDEBAR_TEXT};
+    border: none;
+    border-radius: {t.RADIUS_MD}px;
+    font-size: 18px;
+    text-align: center;
+    min-height: 40px;
+}}
+
+QPushButton#SidebarToggle:hover {{
+    background-color: {t.SIDEBAR_BG_HOVER};
+    color: {t.SIDEBAR_TEXT_ACTIVE};
+}}
+
+QPushButton#SidebarItem {{
+    background-color: transparent;
+    color: {t.SIDEBAR_TEXT};
+    border: none;
+    border-radius: {t.RADIUS_MD}px;
+    text-align: left;
+    padding: 0 14px;
+    font-size: {t.FONT_SIZE_LG}px;
+    font-weight: {t.FONT_WEIGHT_MEDIUM};
+    min-height: 48px;
+}}
+
+QPushButton#SidebarItem:hover {{
+    background-color: {t.SIDEBAR_BG_HOVER};
+    color: {t.SIDEBAR_TEXT_ACTIVE};
+}}
+
+QPushButton#SidebarItem[active="true"] {{
+    background-color: {t.SIDEBAR_BG_ACTIVE};
+    color: {t.SIDEBAR_TEXT_ACTIVE};
+    font-weight: {t.FONT_WEIGHT_SEMIBOLD};
+}}
+
+QLabel#SidebarSectionHeader {{
+    color: {t.SIDEBAR_TEXT_MUTED};
+    font-size: {t.FONT_SIZE_XS}px;
+    font-weight: {t.FONT_WEIGHT_SEMIBOLD};
+    background: transparent;
+    letter-spacing: 1px;
+}}
+
+QLabel#SidebarStoreName {{
+    color: {t.SIDEBAR_TEXT_ACTIVE};
+    font-size: {t.FONT_SIZE_BASE}px;
+    font-weight: {t.FONT_WEIGHT_SEMIBOLD};
+    background: transparent;
+}}
+
+QLabel#SidebarStoreInfo {{
+    color: {t.SIDEBAR_TEXT};
+    font-size: {t.FONT_SIZE_SM}px;
+    background: transparent;
+}}
+
+QLabel#SidebarStatusBadge {{
+    color: {t.SUCCESS};
+    background-color: rgba(22, 163, 74, 0.15);
+    font-size: {t.FONT_SIZE_XS}px;
+    font-weight: {t.FONT_WEIGHT_SEMIBOLD};
+    padding: 2px 8px;
+    border-radius: 10px;
+}}
+
+QFrame#SidebarSeparator {{
+    background-color: {t.SIDEBAR_BORDER};
+    max-height: 1px;
+    min-height: 1px;
+    border: none;
+}}
+
+QPushButton#SidebarSignOut {{
+    background-color: transparent;
+    color: {t.SIDEBAR_TEXT};
+    border: none;
+    border-radius: {t.RADIUS_MD}px;
+    text-align: left;
+    padding: 0 14px;
+    font-size: {t.FONT_SIZE_BASE}px;
+    font-weight: {t.FONT_WEIGHT_MEDIUM};
+    min-height: 44px;
+}}
+
+QPushButton#SidebarSignOut:hover {{
+    background-color: rgba(220, 38, 38, 0.15);
+    color: #FCA5A5;
+}}
+
+/* ════════════════════════════════════════════════════════════════
+   TOP BAR — used by AppShell
+   ════════════════════════════════════════════════════════════════ */
+QFrame#TopBar {{
+    background-color: {t.BG_CARD};
+    border-bottom: 1px solid {t.BORDER};
+}}
+
+QPushButton#TopBarToggle {{
+    background-color: {t.BG_HOVER};
+    color: {t.PRIMARY};
+    border: 1.5px solid {t.PRIMARY_LIGHT};
+    border-radius: {t.RADIUS_MD}px;
+    font-size: 20px;
+    font-weight: {t.FONT_WEIGHT_BOLD};
+    text-align: center;
+}}
+
+QPushButton#TopBarToggle:hover {{
+    background-color: {t.PRIMARY_LIGHT};
+    color: {t.PRIMARY_HOVER};
+    border-color: {t.PRIMARY};
+}}
+
+QPushButton#TopBarToggle:pressed {{
+    background-color: {t.PRIMARY};
+    color: white;
+    border-color: {t.PRIMARY};
+}}
+
+QLabel#TopBarClock {{
+    background-color: {t.BG_CARD};
+    color: {t.TEXT_PRIMARY};
+    border: 1.5px solid {t.PRIMARY_LIGHT};
+    border-radius: {t.RADIUS_LG}px;
+    padding: 12px 18px;
+    font-size: {t.FONT_SIZE_BASE}px;
+    font-weight: {t.FONT_WEIGHT_SEMIBOLD};
+}}
+
+/* User pill — clickable button with avatar circle + name + chevron
+   IMPORTANT: must override the global QPushButton padding rule.
+   Padding here would crush the inner layout, so we set 0 explicitly. */
+/* User pill — IDENTICAL twin of the clock card (QLabel, same QSS) */
+QLabel#UserPill {{
+    background-color: {t.BG_CARD};
+    color: {t.TEXT_PRIMARY};
+    border: 1.5px solid {t.PRIMARY_LIGHT};
+    border-radius: {t.RADIUS_LG}px;
+    padding: 12px 18px;
+    font-size: {t.FONT_SIZE_BASE}px;
+    font-weight: {t.FONT_WEIGHT_SEMIBOLD};
+    min-width: 200px;
+}}
+
+QLabel#UserPill:hover {{
+    background-color: {t.PRIMARY_LIGHT};
+    border-color: {t.PRIMARY};
+    color: {t.PRIMARY};
+}}
+
+
+/* ════════════════════════════════════════════════════════════════
+   LOGIN PAGE
+   ════════════════════════════════════════════════════════════════ */
 QFrame#LoginLeftPanel {{
     background: qlineargradient(
         x1: 0, y1: 0, x2: 1, y2: 0,
@@ -509,9 +669,8 @@ QFrame#LoginCardBorder {{
     );
 }}
 
-
 /* ════════════════════════════════════════════════════════════════
-   DIALOG HEADER & FOOTER — used by BaseDialog
+   DIALOG HEADER & FOOTER
    ════════════════════════════════════════════════════════════════ */
 QFrame#DialogHeader {{
     background-color: {t.BG_CARD};
@@ -524,7 +683,7 @@ QFrame#DialogFooter {{
 }}
 
 /* ════════════════════════════════════════════════════════════════
-   DIALOGS — modal overlay style
+   DIALOGS
    ════════════════════════════════════════════════════════════════ */
 QDialog {{
     background-color: {t.BG_CARD};
