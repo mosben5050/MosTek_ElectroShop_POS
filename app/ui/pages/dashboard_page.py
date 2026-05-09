@@ -1,8 +1,9 @@
 """DashboardPage — the landing page after login.
 
-Phase A: 5 KPI cards across the top, all showing empty states until
-real data exists. More phases coming: charts, recent transactions,
-low stock alerts.
+Phase A: 5 KPI cards across the top, all empty states for now.
+Phase B: Two chart cards (Sales Overview + Payment Method) — also
+         empty states until real data exists.
+Phase C: Three-column data tables (coming next).
 """
 from typing import Optional
 from PySide6.QtCore import Qt
@@ -14,6 +15,7 @@ from app.resources.styles import tokens as t
 from app.models.user import User
 from app.ui.pages.base_page import BasePage
 from app.ui.widgets.kpi_card import KpiCard
+from app.ui.widgets.chart_card import ChartCard
 
 
 class DashboardPage(BasePage):
@@ -27,9 +29,7 @@ class DashboardPage(BasePage):
         self._header.hide()
 
         self._build_kpi_row()
-
-        # Placeholder for the rest of the dashboard (charts + tables)
-        # Will be filled in in Phase B and C
+        self._build_charts_row()
         self._build_coming_soon_section()
 
         self.content_layout.addStretch()
@@ -39,14 +39,10 @@ class DashboardPage(BasePage):
     # ────────────────────────────────────────────────────────────
     def _build_kpi_row(self) -> None:
         """Build the row of 5 KPI cards across the top of the dashboard."""
-
-        # Container row with consistent spacing
         kpi_grid = QGridLayout()
         kpi_grid.setSpacing(t.SPACE_4)
         kpi_grid.setContentsMargins(0, 0, 0, 0)
 
-        # Card definitions — same colours used in the reference image,
-        # adapted for our blue+gold brand
         cards = [
             {
                 "title": "Total Sales",
@@ -73,7 +69,7 @@ class DashboardPage(BasePage):
                 "title": "Customers",
                 "value": "0",
                 "icon": "👥",
-                "color": "#DBEAFE",   # soft blue (matches our brand)
+                "color": "#DBEAFE",   # soft blue
                 "empty": "No customers yet",
             },
             {
@@ -85,8 +81,6 @@ class DashboardPage(BasePage):
             },
         ]
 
-        # Lay them out in a single row using QGridLayout so they share
-        # available width equally and wrap on narrower screens
         for col, card_def in enumerate(cards):
             card = KpiCard(
                 title=card_def["title"],
@@ -97,17 +91,60 @@ class DashboardPage(BasePage):
             )
             kpi_grid.addWidget(card, 0, col)
 
-        # Make all 5 columns have equal stretch
         for col in range(5):
             kpi_grid.setColumnStretch(col, 1)
 
         self.content_layout.addLayout(kpi_grid)
 
     # ────────────────────────────────────────────────────────────
-    # Coming soon — placeholder until charts and tables are built
+    # Phase B — Charts row
+    # ────────────────────────────────────────────────────────────
+    def _build_charts_row(self) -> None:
+        """Build the row of two chart cards: line chart + donut chart."""
+        # Spacer between KPI row and charts
+        spacer = QWidget()
+        spacer.setFixedHeight(t.SPACE_5)
+        self.content_layout.addWidget(spacer)
+
+        charts_row = QHBoxLayout()
+        charts_row.setSpacing(t.SPACE_4)
+        charts_row.setContentsMargins(0, 0, 0, 0)
+
+        # Left: Sales Overview (line chart) — wider
+        self._sales_chart = ChartCard(
+            title="Sales Overview",
+            period_options=[
+                ("7 Days",  "7d"),
+                ("30 Days", "30d"),
+                ("90 Days", "90d"),
+            ],
+            empty_icon="📈",
+            empty_message="No sales data yet",
+            empty_subtext=(
+                "Make your first sale to see daily revenue plotted here."
+            ),
+        )
+        charts_row.addWidget(self._sales_chart, stretch=2)
+
+        # Right: Sales by Payment Method (donut) — narrower
+        self._payment_chart = ChartCard(
+            title="Sales by Payment Method",
+            empty_icon="💳",
+            empty_message="No payment data yet",
+            empty_subtext=(
+                "Once you process sales, the breakdown of cash, card, and "
+                "mobile money will appear here."
+            ),
+        )
+        charts_row.addWidget(self._payment_chart, stretch=1)
+
+        self.content_layout.addLayout(charts_row)
+
+    # ────────────────────────────────────────────────────────────
+    # Phase C — placeholder until tables are built
     # ────────────────────────────────────────────────────────────
     def _build_coming_soon_section(self) -> None:
-        """Friendly placeholder for the rest of the dashboard."""
+        """Friendly placeholder for the bottom row of the dashboard."""
         spacer = QWidget()
         spacer.setFixedHeight(24)
         self.content_layout.addWidget(spacer)
@@ -124,12 +161,12 @@ class DashboardPage(BasePage):
         layout.setSpacing(t.SPACE_3)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        icon = QLabel("📈")
+        icon = QLabel("📋")
         icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
         icon.setStyleSheet("font-size: 48px; background: transparent;")
         layout.addWidget(icon)
 
-        title = QLabel("Charts and reports coming next")
+        title = QLabel("Tables and reports coming next")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet(
             f"color: {t.TEXT_PRIMARY};"
@@ -140,8 +177,7 @@ class DashboardPage(BasePage):
         layout.addWidget(title)
 
         desc = QLabel(
-            "Sales overview chart, payment method breakdown, "
-            "top products, recent transactions, and low-stock alerts "
+            "Top products, recent transactions, and low-stock alerts "
             "will appear here once we build them."
         )
         desc.setAlignment(Qt.AlignmentFlag.AlignCenter)

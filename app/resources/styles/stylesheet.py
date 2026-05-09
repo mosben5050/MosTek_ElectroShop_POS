@@ -698,6 +698,15 @@ QFrame#KpiCard {{
     border-radius: {t.RADIUS_LG}px;
 }}
 
+/* ════════════════════════════════════════════════════════════════
+   CHART CARD — dashboard chart wrappers
+   ════════════════════════════════════════════════════════════════ */
+QFrame#ChartCard {{
+    background-color: {t.BG_CARD};
+    border: 1px solid {t.BORDER};
+    border-radius: {t.RADIUS_LG}px;
+}}
+
 QFrame#KpiCard:hover {{
     border-color: {t.PRIMARY_LIGHT};
 }}
