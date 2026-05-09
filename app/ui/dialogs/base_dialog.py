@@ -115,18 +115,38 @@ class BaseDialog(QDialog):
             self.setMaximumSize(int(geo.width() * 0.9), int(geo.height() * 0.9))
 
     def showEvent(self, event):
-        """Centre the dialog on the parent (or screen) every time it opens."""
+        """Centre the dialog on the parent (or screen) every time it opens.
+
+        We defer the centring by one event-loop tick using QTimer to ensure
+        Qt has computed the dialog's actual size before we position it.
+        """
         super().showEvent(event)
-        self._center_on_parent()
+        from PySide6.QtCore import QTimer
+        QTimer.singleShot(0, self._center_on_parent)
 
     def _center_on_parent(self) -> None:
-        parent = self.parent()
-        if parent is not None and hasattr(parent, "geometry"):
-            ref_geo = parent.geometry()
-        else:
-            screen = QApplication.primaryScreen()
-            ref_geo = screen.availableGeometry() if screen else self.geometry()
+        """Centre the dialog on the available screen area.
 
-        x = ref_geo.x() + (ref_geo.width() - self.width()) // 2
-        y = ref_geo.y() + (ref_geo.height() - self.height()) // 2
+        We use availableGeometry() which already excludes the Windows
+        taskbar. We center on this rectangle directly — ignoring the
+        parent geometry — because the parent (the maximised main window)
+        may itself extend behind the taskbar in ways Qt doesn't always
+        report correctly.
+        """
+        screen = QApplication.primaryScreen()
+        if not screen:
+            return
+
+        avail = screen.availableGeometry()  # screen rect minus taskbar
+
+        # Force the dialog to fit comfortably (max 80% of available area)
+        max_w = int(avail.width() * 0.80)
+        max_h = int(avail.height() * 0.80)
+        if self.width() > max_w or self.height() > max_h:
+            self.resize(min(self.width(), max_w), min(self.height(), max_h))
+
+        # Center on the available screen area (NOT on the parent window)
+        x = avail.x() + (avail.width() - self.width()) // 2
+        y = avail.y() + (avail.height() - self.height()) // 2
+
         self.move(x, y)

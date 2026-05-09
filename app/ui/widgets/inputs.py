@@ -25,6 +25,9 @@ class TextField(QWidget):
 
     When an icon is provided, we build a "fake input": a styled QFrame
     that contains the icon + a borderless QLineEdit side by side.
+
+    Set compact=True for use inside dialogs and dense forms (40px tall).
+    Default is the premium 52px height used on the login screen.
     """
 
     text_changed = Signal(str)
@@ -35,6 +38,7 @@ class TextField(QWidget):
         placeholder: str = "",
         required: bool = False,
         icon: str = "",
+        compact: bool = False,
         parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
@@ -56,11 +60,14 @@ class TextField(QWidget):
             )
             layout.addWidget(self._label)
 
+        # Determine the height we'll use everywhere below
+        input_height = t.INPUT_HEIGHT_COMPACT if compact else t.INPUT_HEIGHT
+
         # ── Input (with or without icon) ─────────────────────────
         if icon:
             self._frame = QFrame()
             self._frame.setObjectName("InputFrame")
-            self._frame.setFixedHeight(t.INPUT_HEIGHT)
+            self._frame.setFixedHeight(input_height)
             self._frame.setSizePolicy(
                 QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
             )
@@ -98,6 +105,7 @@ class TextField(QWidget):
                 "  margin: 0;"
                 f"  color: {t.TEXT_PRIMARY};"
                 f"  font-size: {t.INPUT_FONT_SIZE}px;"
+                f"  font-weight: {t.FONT_WEIGHT_MEDIUM};"
                 "  min-height: 0;"
                 "}"
             )
@@ -110,6 +118,8 @@ class TextField(QWidget):
             self._input = QLineEdit()
             self._input.setPlaceholderText(placeholder)
             self._input.textChanged.connect(self.text_changed.emit)
+            if compact:
+                self._input.setFixedHeight(input_height)
             layout.addWidget(self._input)
 
         # ── Error label ──────────────────────────────────────────
@@ -177,9 +187,10 @@ class PasswordField(TextField):
         placeholder: str = "",
         required: bool = False,
         icon: str = "",
+        compact: bool = False,
         parent: Optional[QWidget] = None,
     ):
-        super().__init__(label, placeholder, required, icon, parent)
+        super().__init__(label, placeholder, required, icon, compact, parent)
         self._input.setEchoMode(QLineEdit.EchoMode.Password)
 
 

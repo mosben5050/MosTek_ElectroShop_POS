@@ -119,11 +119,12 @@ RADIUS_XL = 16
 # ════════════════════════════════════════════════════════════════════
 # COMPONENT SIZES — bumped for premium feel and accessibility
 # ════════════════════════════════════════════════════════════════════
-INPUT_HEIGHT      = 52   # text fields, dropdowns (was 38 — much more substantial now)
-INPUT_FONT_SIZE   = 15   # font inside inputs
-BUTTON_HEIGHT     = 44   # standard buttons (was 38)
-BUTTON_HEIGHT_LG  = 52   # primary call-to-action buttons (was 44, matches input height)
-ROW_HEIGHT        = 48
+INPUT_HEIGHT          = 52   # text fields, dropdowns — premium look (login, main forms)
+INPUT_HEIGHT_COMPACT  = 40   # for dialogs and dense forms
+INPUT_FONT_SIZE       = 16   # font inside inputs
+BUTTON_HEIGHT         = 44   # standard buttons
+BUTTON_HEIGHT_LG      = 52   # primary call-to-action buttons
+ROW_HEIGHT            = 48
 
 
 # ════════════════════════════════════════════════════════════════════

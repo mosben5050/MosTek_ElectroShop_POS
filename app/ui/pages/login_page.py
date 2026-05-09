@@ -1,6 +1,6 @@
 """LoginPage — the entry screen for the application."""
 from typing import Optional
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QSettings
 from PySide6.QtGui import QPixmap, QPainter
 from PySide6.QtWidgets import (
     QWidget, QHBoxLayout, QVBoxLayout, QLabel, QFrame, QSizePolicy,
@@ -12,16 +12,19 @@ from app.resources.assets import logo_path, login_background_path
 from app.ui.widgets.feature_row import FeatureRow
 from app.ui.widgets.buttons import PrimaryButton, SecondaryButton, GhostButton
 from app.ui.widgets.inputs import TextField, PasswordField
+from app.services.auth_service import AuthService
 
 
 class LoginPage(QWidget):
     """Two-column login screen with background image."""
 
-    login_succeeded = Signal(str)
+    login_succeeded = Signal(object)  # carries the User object
 
     def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
 
+        self._auth = AuthService()
+        self._settings = QSettings("MosTek", "ElectroPOS")
         self._background = QPixmap(login_background_path())
 
         root = QHBoxLayout(self)
@@ -33,6 +36,10 @@ class LoginPage(QWidget):
 
         self._right_panel = self._build_right_panel()
         root.addWidget(self._right_panel, stretch=1)
+
+        # Wire up keyboard shortcuts and restore remembered username
+        self._wire_keyboard_shortcuts()
+        self._restore_remembered_username()
 
     def paintEvent(self, event):
         if not self._background.isNull():
@@ -320,23 +327,87 @@ class LoginPage(QWidget):
         username = self._username_field.text().strip()
         password = self._password_field.text()
 
+        # Clear any previous errors
+        self._username_field.clear_error()
+        self._password_field.clear_error()
+
+        # Basic field-level validation
         if not username:
             self._username_field.set_error("Username is required")
             return
-        else:
-            self._username_field.clear_error()
-
         if not password:
             self._password_field.set_error("Password is required")
             return
-        else:
-            self._password_field.clear_error()
 
-        print(f"[Login] Sign in attempt: username={username}")
-        self.login_succeeded.emit(username)
+        # Try to authenticate against the database
+        user = self._auth.authenticate(username, password)
+
+        if user is None:
+            # Show error on the password field. We deliberately use a
+            # generic message so attackers can't tell whether the username
+            # or the password was wrong.
+            self._password_field.set_error("Invalid username or password")
+            self._password_field.set_text("")  # clear the password field
+            self._password_field.set_focus()
+            return
+
+        # Success!
+        print(f"[Login] {user.username} signed in successfully ({user.role})")
+        self._persist_remember_me(user.username)
+        self.login_succeeded.emit(user)
+
 
     def _on_pin_login(self):
         print("[Login] PIN login requested (not yet implemented)")
 
     def _on_forgot_password(self):
-        print("[Login] Forgot password requested (not yet implemented)")
+        """Show an info dialog explaining how to recover access."""
+        from PySide6.QtWidgets import QMessageBox
+        msg = QMessageBox(self)
+        msg.setWindowTitle("Password Recovery")
+        msg.setIcon(QMessageBox.Icon.Information)
+        msg.setText("Forgot your password?")
+        msg.setInformativeText(
+            "For your security, only an administrator can reset your password.\n\n"
+            "Please contact your shop administrator to have your password reset, "
+            "or sign in with a PIN if you have one set up."
+        )
+        msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+        msg.exec()
+
+    # ────────────────────────────────────────────────────────────
+    # Keyboard shortcuts and "Remember me"
+    # ────────────────────────────────────────────────────────────
+    def _wire_keyboard_shortcuts(self):
+        """Make Enter behave naturally:
+           - Enter in username field → jump to password field
+           - Enter in password field → trigger sign-in
+        """
+        self._username_field.line_edit.returnPressed.connect(
+            self._password_field.set_focus
+        )
+        self._password_field.line_edit.returnPressed.connect(
+            self._on_sign_in
+        )
+
+    def _restore_remembered_username(self):
+        """If 'Remember me' was on last time, pre-fill the username."""
+        remembered = self._settings.value("login/remembered_username", "")
+        if remembered:
+            self._username_field.set_text(str(remembered))
+            self._remember_checkbox.setChecked(True)
+            # Focus the password field since username is already filled
+            self._password_field.set_focus()
+        else:
+            self._username_field.set_focus()
+
+    def _persist_remember_me(self, username: str):
+        """Save or clear the remembered username based on checkbox state.
+
+        IMPORTANT: We only ever store the username, NEVER the password.
+        Storing passwords on disk is a security risk we don't take.
+        """
+        if self._remember_checkbox.isChecked():
+            self._settings.setValue("login/remembered_username", username)
+        else:
+            self._settings.remove("login/remembered_username")

@@ -146,6 +146,8 @@ QDateEdit, QDateTimeEdit, QComboBox {{
     border-radius: {t.RADIUS_MD}px;
     padding: 6px 10px;
     min-height: {t.INPUT_HEIGHT}px;
+    font-size: {t.INPUT_FONT_SIZE}px;
+    font-weight: {t.FONT_WEIGHT_MEDIUM};
     selection-background-color: {t.PRIMARY_LIGHT};
     selection-color: {t.TEXT_PRIMARY};
 }}
@@ -181,11 +183,38 @@ QLineEdit::placeholder {{
 }}
 
 /* ════════════════════════════════════════════════════════════════
-   COMBOBOX dropdown
+   COMBOBOX dropdown — restore arrow indicator using CSS
    ════════════════════════════════════════════════════════════════ */
+QComboBox {{
+    padding-right: 32px;  /* space for the dropdown arrow */
+}}
+
 QComboBox::drop-down {{
-    border: none;
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
     width: 28px;
+    border-left: 1px solid {t.BORDER};
+    border-top-right-radius: {t.RADIUS_MD}px;
+    border-bottom-right-radius: {t.RADIUS_MD}px;
+    background-color: transparent;
+}}
+
+QComboBox::drop-down:hover {{
+    background-color: {t.BG_HOVER};
+}}
+
+/* Triangle arrow drawn with CSS borders — no image file needed */
+QComboBox::down-arrow {{
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid {t.TEXT_MUTED};
+    margin-right: 4px;
+}}
+
+QComboBox::down-arrow:hover {{
+    border-top-color: {t.TEXT_PRIMARY};
 }}
 
 QComboBox QAbstractItemView {{
