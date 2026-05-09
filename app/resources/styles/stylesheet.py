@@ -690,6 +690,19 @@ QDialog {{
 }}
 
 /* ════════════════════════════════════════════════════════════════
+   KPI CARD — dashboard metric cards
+   ════════════════════════════════════════════════════════════════ */
+QFrame#KpiCard {{
+    background-color: {t.BG_CARD};
+    border: 1px solid {t.BORDER};
+    border-radius: {t.RADIUS_LG}px;
+}}
+
+QFrame#KpiCard:hover {{
+    border-color: {t.PRIMARY_LIGHT};
+}}
+
+/* ════════════════════════════════════════════════════════════════
    PROGRESS BAR
    ════════════════════════════════════════════════════════════════ */
 QProgressBar {{
