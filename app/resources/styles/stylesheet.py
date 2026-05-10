@@ -272,20 +272,28 @@ QRadioButton::indicator:checked {{
 /* ════════════════════════════════════════════════════════════════
    INPUT FRAME
    ════════════════════════════════════════════════════════════════ */
+/* Input frame — light blue tinted border, premium look */
 QFrame#InputFrame {{
-    background-color: {t.BG_INPUT};
-    border: 1.5px solid {t.BORDER_STRONG};
+    background-color: {t.BG_CARD};
+    border: 1.5px solid {t.PRIMARY_LIGHT};
     border-radius: {t.RADIUS_MD}px;
 }}
 
-QFrame#InputFrame:focus-within {{
-    border: 2px solid {t.BORDER_FOCUS};
+QFrame#InputFrame:hover {{
+    border: 1.5px solid {t.PRIMARY};
+    background-color: {t.BG_CARD};
 }}
 
 QFrame#InputFrame[state="error"] {{
     border: 1.5px solid {t.DANGER};
 }}
 
+/* Inner icon container — light grey rounded square */
+QLabel#InputIcon {{
+    background-color: {t.BG_HOVER};
+    border-radius: {t.RADIUS_SM}px;
+    color: {t.TEXT_SECONDARY};
+}}
 /* ════════════════════════════════════════════════════════════════
    TABLE
    ════════════════════════════════════════════════════════════════ */
@@ -361,30 +369,33 @@ QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {{
 }}
 
 /* ════════════════════════════════════════════════════════════════
-   TABS
+   TABS — generic + premium variant for SettingsPage
    ════════════════════════════════════════════════════════════════ */
 QTabWidget::pane {{
-    background-color: {t.BG_CARD};
-    border: 1px solid {t.BORDER};
-    border-radius: {t.RADIUS_LG}px;
-    top: -1px;
+    background-color: transparent;
+    border: none;
 }}
 
 QTabBar::tab {{
     background-color: transparent;
     color: {t.TEXT_MUTED};
-    padding: 10px 20px;
+    padding: 14px 24px;
     border: none;
+    font-size: {t.FONT_SIZE_BASE}px;
     font-weight: {t.FONT_WEIGHT_MEDIUM};
+    margin-right: 4px;
 }}
 
 QTabBar::tab:selected {{
     color: {t.PRIMARY};
-    border-bottom: 2px solid {t.PRIMARY};
+    border-bottom: 3px solid {t.PRIMARY};
+    font-weight: {t.FONT_WEIGHT_SEMIBOLD};
 }}
 
 QTabBar::tab:hover:!selected {{
     color: {t.TEXT_PRIMARY};
+    background-color: {t.BG_HOVER};
+    border-radius: {t.RADIUS_MD}px;
 }}
 
 /* ════════════════════════════════════════════════════════════════
@@ -711,6 +722,26 @@ QFrame#KpiCard:hover {{
     border-color: {t.PRIMARY_LIGHT};
 }}
 
+/* ════════════════════════════════════════════════════════════════
+   TAX MODE CARDS — selectable cards in Settings → Tax & Currency
+   ════════════════════════════════════════════════════════════════ */
+QPushButton#TaxModeCard {{
+    background-color: {t.BG_CARD};
+    border: 1.5px solid {t.BORDER};
+    border-radius: {t.RADIUS_MD}px;
+    padding: 0;
+    text-align: left;
+}}
+
+QPushButton#TaxModeCard:hover {{
+    border-color: {t.PRIMARY_LIGHT};
+    background-color: {t.BG_HOVER};
+}}
+
+QPushButton#TaxModeCard[selected="true"] {{
+    border: 2px solid {t.PRIMARY};
+    background-color: {t.PRIMARY_LIGHT};
+}}
 /* ════════════════════════════════════════════════════════════════
    PROGRESS BAR
    ════════════════════════════════════════════════════════════════ */

@@ -73,25 +73,25 @@ class TextField(QWidget):
             )
 
             frame_layout = QHBoxLayout(self._frame)
-            frame_layout.setContentsMargins(18, 0, 18, 0)
-            frame_layout.setSpacing(14)
+            frame_layout.setContentsMargins(8, 0, 18, 0)
+            frame_layout.setSpacing(12)
             frame_layout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
 
-            # Icon — fixed size, vertically centred
+            # Icon in a light-grey rounded square — premium look
             self._icon_label = QLabel(icon)
-            self._icon_label.setFixedSize(20, 20)
+            self._icon_label.setObjectName("InputIcon")
+            self._icon_label.setFixedSize(32, 32)
             self._icon_label.setAlignment(
                 Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignHCenter
             )
             self._icon_label.setStyleSheet(
-                f"color: {t.TEXT_MUTED};"
+                f"background-color: {t.BG_HOVER};"
+                f"border-radius: {t.RADIUS_SM}px;"
                 f"font-size: 16px;"
-                f"background: transparent;"
-                f"border: none;"
-                f"padding: 0;"
-                f"margin: 0;"
             )
-            frame_layout.addWidget(self._icon_label, alignment=Qt.AlignmentFlag.AlignVCenter)
+            frame_layout.addWidget(
+                self._icon_label, alignment=Qt.AlignmentFlag.AlignVCenter
+            )
 
             # Borderless input — frame provides the border
             self._input = QLineEdit()

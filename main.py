@@ -57,7 +57,7 @@ def main():
     window = QMainWindow()
     window.setWindowTitle("MosTek ElectroPOS")
     window.setWindowIcon(app_icon)
-    window.setMinimumSize(1024, 600)
+    window.setMinimumSize(1280, 720)
     window.showMaximized()
 
     # First-run check BEFORE showing the login page
@@ -106,18 +106,47 @@ def _on_login_success(window: QMainWindow, user) -> None:
 
     sidebar = Sidebar(user)
     sidebar.set_active("dashboard")
-    sidebar.item_selected.connect(
-        lambda key: print(f"[Nav] User clicked: {key}")
-    )
     sidebar.sign_out_clicked.connect(
         lambda: _on_sign_out(window)
     )
-    # Connect the TopBar toggle to the sidebar's collapse method
     top_bar.toggle_sidebar_clicked.connect(sidebar.toggle_collapsed)
     body_layout.addWidget(sidebar)
 
+    # ── Content area: a stack of pages we swap between ──
+    from PySide6.QtWidgets import QStackedWidget
+    pages = QStackedWidget()
+
+    # Build pages once — only Dashboard and Settings for now,
+    # other menu items will be wired up as we build them
     dashboard = DashboardPage(user)
-    body_layout.addWidget(dashboard, stretch=1)
+    settings_page = _build_settings_page_if_admin(user, top_bar, sidebar)
+
+    pages.addWidget(dashboard)  # index 0
+    if settings_page is not None:
+        pages.addWidget(settings_page)  # index 1
+
+    body_layout.addWidget(pages, stretch=1)
+
+    # Wire sidebar item clicks to swap pages
+    def on_nav(key: str):
+        print(f"[Nav] User clicked: {key}")
+        if key == "dashboard":
+            pages.setCurrentWidget(dashboard)
+            top_bar.set_heading(
+                f"Welcome back, {user.display_name}",
+                "Here's a quick overview of your shop today.",
+            )
+        elif key == "settings" and settings_page is not None:
+            pages.setCurrentWidget(settings_page)
+            top_bar.set_heading(
+                "Settings",
+                "Configure your shop, taxes, receipts, and more.",
+            )
+        else:
+            # Other menu items not built yet — for now, just print
+            print(f"[Nav] '{key}' page not built yet")
+
+    sidebar.item_selected.connect(on_nav)
 
     outer.addWidget(body, stretch=1)
 
@@ -179,6 +208,31 @@ def _handle_user_menu_action(window: QMainWindow, action: str) -> None:
     elif action == "about":
         print("[UserMenu] About — coming soon")
 
+def _build_settings_page_if_admin(user, top_bar, sidebar):
+    """Build the Settings page, but only if the user is an admin.
+
+    Returns None for non-admins (cashiers/technicians shouldn't see it).
+    """
+    if not user.is_admin:
+        return None
+
+    from app.ui.pages.settings_page import SettingsPage
+    page = SettingsPage(user)
+
+    # When Shop Profile saves, the sidebar re-reads shop info from DB
+    # (currently a no-op since we removed the store info block, but
+    # the wiring is here for when we add it back or use it elsewhere).
+    page.shop_info_updated.connect(
+        lambda: _on_shop_info_changed(sidebar)
+    )
+
+    return page
+
+
+def _on_shop_info_changed(sidebar) -> None:
+    """Called after Shop Profile saves so UI components can refresh."""
+    print("[Settings] Shop info updated — refreshing UI")
+    sidebar.refresh_store_info()
 
 if __name__ == "__main__":
     main()
